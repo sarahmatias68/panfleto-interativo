@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panfleto Interativo — Mapa de Lojas</title>
+  <meta name="description" content="Panfleto interativo com mapa de lojas: passe o mouse ou toque nas bolinhas numeradas para ver informações e cardápio." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <main class="palco">
+    <div class="panfleto" id="panfleto">
+      <img src="public/panfleto.png" alt="Panfleto com ofertas e lojas participantes" />
+      <div class="balao" id="balao" role="dialog" aria-hidden="true" aria-labelledby="balao-titulo">
+        <button class="balao-fechar" id="balao-fechar" type="button" aria-label="Fechar informações da loja">✕</button>
+        <h3 id="balao-titulo"></h3>
+        <p id="balao-descricao"></p>
+        <a class="btn-cardapio" id="balao-link" href="#" target="_blank" rel="noopener noreferrer">Ver cardápio</a>
+      </div>
+    </div>
+    <div class="dica-toque" id="dica-toque">Toque nos números para ver o cardápio</div>
+  </main>
+
+  <script src="data/lojas.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

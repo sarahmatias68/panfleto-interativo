@@ -1,0 +1,136 @@
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+body { background-color: #f4f4f4; text-align: center; padding: 20px; }
+
+.palco { display: flex; justify-content: center; }
+.panfleto {
+  position: relative; 
+  display: inline-block;
+  max-width: 1000px;
+  width: 100%;
+}
+.panfleto img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.bolinha {
+  position: absolute;
+  width: 5.5%;
+  max-width: 56px;
+  min-width: 38px;
+  aspect-ratio: 1.4 / 1;
+  height: auto;
+  background-color: transparent;
+  color: transparent;
+  border: none;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  transition: background-color 0.2s;
+  z-index: 10;
+  animation: descoberta 1.4s ease 1;
+}
+.bolinha:hover, .bolinha:focus-visible, .bolinha:active {
+  background-color: rgba(19, 67, 18, 0.28);
+  color: transparent;
+  transform: translate(-50%, -50%);
+  outline: none;
+  animation: none;
+}
+
+@keyframes descoberta {
+  0%, 100% { background-color: transparent; }
+  30% { background-color: rgba(19, 67, 18, 0.35); }
+}
+
+.dica-toque {
+  display: none;
+}
+
+.balao {
+  position: absolute;
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  width: 200px;
+  display: none;
+  z-index: 20;
+  text-align: left;
+  transform: translate(-50%, -120%);
+}
+.balao.ativo { display: block; }
+
+.balao-fechar {
+  position: absolute;
+  top: 5px; right: 8px;
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #666;
+}
+.balao-fechar:hover { color: #d00; }
+
+.balao h3 { font-size: 16px; margin-bottom: 8px; color: #114220; }
+.balao p { font-size: 13px; margin-bottom: 12px; color: #444; }
+.btn-cardapio {
+  display: inline-block;
+  background-color: #114220;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 13px;
+}
+.btn-cardapio:hover { background-color: #0b2e15; }
+
+/* Mobile: popup perto da bolinha + dica de toque */
+@media (max-width: 640px) {
+  body { padding: 12px; }
+
+  .bolinha {
+    min-width: 30px;
+    font-size: 13px;
+  }
+
+  .dica-toque {
+    display: block;
+    position: fixed;
+    left: 50%;
+    bottom: 12px;
+    transform: translateX(-50%);
+    background: #134312;
+    color: #fff;
+    font-size: 14px;
+    padding: 10px 16px;
+    border-radius: 999px;
+    z-index: 40;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    white-space: nowrap;
+  }
+  .dica-toque.oculta { display: none; }
+
+  .balao {
+    width: 180px;
+    padding: 12px;
+  }
+  .balao h3 { font-size: 14px; }
+  .balao p { font-size: 12px; }
+
+  .btn-cardapio {
+    display: block;
+    text-align: center;
+    padding: 12px;
+    font-size: 15px;
+  }
+}

@@ -1,28 +1,278 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Panfleto Interativo — Mapa de Lojas</title>
-  <meta name="description" content="Panfleto interativo com mapa de lojas: passe o mouse ou toque nas bolinhas numeradas para ver informações e cardápio." />
-  <link rel="stylesheet" href="styles.css" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#264d25">
+<title>Vila Gastronômica · Natal do Bem</title>
+<meta name="description" content="Vila Gastronômica do Natal do Bem: veja os quiosques, especialidades, pratos sociais e cardápios.">
+<link rel="icon" href="assets/ramo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" href="assets/logo-natal.svg" as="image" fetchpriority="high">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--verde:#1d4823;--verde-borda:#264d25;--vermelho:#cf1f2b;--dourado:#e6c65a;--areia:#d0a87e;--creme:#fffaf0;--tinta:#1e351f;--linha:#ead9b8}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{font-family:Poppins,system-ui,sans-serif;color:var(--tinta);background:var(--vermelho);min-height:100dvh}
+button{font-family:inherit}
+:focus-visible{outline:3px solid var(--vermelho);outline-offset:2px}
+.topo{height:env(safe-area-inset-top);background:var(--verde-borda)}
+.borda{height:16px;background:url(assets/borda.svg) repeat-x 0 0/auto 16px}
+.cab{display:flex;align-items:center;justify-content:center;gap:6px;padding:4px 8px 0}
+.cab .logo{height:58px;width:auto}
+.cab .ramo{height:42px;width:auto}
+.cab .ramo.dir{transform:scaleX(-1)}
+.faixa{width:max-content;max-width:94%;margin:2px auto 10px;background:var(--verde);clip-path:polygon(0 0,100% 0,97% 50%,100% 100%,0 100%,3% 50%);padding:4px 30px 5px}
+.faixa h1{margin:0;font:italic 700 1.25rem/1.2 "Playfair Display",Georgia,serif;color:var(--dourado);text-align:center}
+
+.painel{background:var(--creme);border-radius:22px;margin:0 8px;padding:10px 8px 12px}
+.lateral{background:var(--creme);padding:0 0 8px;border-bottom:1px solid var(--linha)}
+.lat-tit,.ajuda{display:none}
+.barra{position:sticky;top:0;z-index:5;display:flex;gap:8px;background:var(--creme);padding:4px 0}
+
+.chave{flex:none;display:flex;align-items:center;gap:8px;height:42px;padding:0 14px 0 8px;border:2px solid var(--areia);border-radius:999px;background:#fff;color:var(--verde);font:600 .8rem Poppins,sans-serif;cursor:pointer}
+.trilho{position:relative;width:36px;height:22px;border-radius:999px;background:#cdbf9f;transition:background .15s}
+.trilho i{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .15s}
+.chave[aria-checked=true]{border-color:var(--vermelho);background:#fff3cf}
+.chave[aria-checked=true] .trilho{background:var(--vermelho)}
+.chave[aria-checked=true] .trilho i{transform:translateX(14px)}
+
+.btn-esp{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;height:42px;background:var(--verde);color:var(--creme);border:0;border-radius:999px;font:600 .8rem Poppins,sans-serif;cursor:pointer}
+.btn-esp svg{width:16px;height:16px}
+.qn{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:var(--vermelho);color:#fff;font-size:.68rem;font-weight:600}
+
+.ativos{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:8px 0 0;scrollbar-width:none}
+.ativos::-webkit-scrollbar{display:none}
+.ativo{flex:none;display:flex;align-items:center;gap:6px;height:30px;padding:0 8px 0 12px;border:0;border-radius:999px;background:var(--areia);color:var(--verde);font:600 .72rem Poppins,sans-serif;white-space:nowrap;cursor:pointer}
+.ativo span{font-size:1.05rem;line-height:1}
+.limpar{flex:none;background:none;border:0;padding:8px 6px;color:var(--vermelho);font:600 .74rem Poppins,sans-serif;text-decoration:underline;cursor:pointer}
+
+/* gaveta de especialidades (mobile): acordeão inline, empurra o conteúdo (sem véu/tela) */
+.gaveta{display:none;flex-direction:column;margin-top:10px;background:#fff;border:2px solid var(--areia);border-radius:16px;overflow:hidden}
+.gaveta.on{display:flex}
+.g-cab{display:flex;align-items:center;justify-content:space-between;padding:10px 12px 2px}
+.g-cab h2{margin:0;font:italic 700 1.3rem/1.2 "Playfair Display",Georgia,serif;color:var(--verde)}
+.g-x{width:40px;height:40px;border:0;border-radius:50%;background:#f1e6cf;color:var(--verde);font-size:1.6rem;line-height:1;cursor:pointer}
+.opcoes{display:flex;flex-direction:row;overflow-x:auto;gap:8px;padding:8px 12px 12px;scrollbar-width:none}
+.opcoes::-webkit-scrollbar{display:none}
+.opcao{position:relative;flex:none;width:82px;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:88px;padding:8px 4px 6px;background:#fff;border:2px solid var(--linha);border-radius:16px;color:var(--verde);font:500 .72rem/1.2 Poppins,sans-serif;text-align:center;cursor:pointer}
+.opcao img{width:44px;height:44px}
+.opcao .ct{display:none}
+.opcao[aria-pressed=true]{background:#f4e3c3;border-color:var(--verde);font-weight:600}
+.opcao[aria-pressed=true]::after{content:"✓";position:absolute;top:4px;right:5px;width:18px;height:18px;border-radius:50%;background:var(--verde);color:var(--creme);font-size:.7rem;line-height:18px}
+.g-pe{display:flex;align-items:center;gap:6px;padding:8px 12px 12px;border-top:1px solid var(--linha)}
+.g-ok{flex:1;height:46px;border:0;border-radius:999px;background:var(--vermelho);color:#fff;font:600 .9rem Poppins,sans-serif;cursor:pointer}
+
+#resumo{margin:8px 4px 0;min-height:1.4em;font-size:.76rem;font-weight:500;color:var(--verde)}
+.mapa{display:grid;grid-template-columns:repeat(3,1fr);gap:0 8px;padding-top:2px}
+.grupo{position:relative;margin-top:26px;padding:28px 4px 8px;border:2px solid var(--areia);border-radius:20px 20px 14px 14px;text-align:center}
+.grupo>img{position:absolute;top:-23px;left:50%;width:46px;height:46px;margin-left:-23px;border-radius:50%;box-shadow:0 0 0 3px var(--creme)}
+.rot{display:block;width:fit-content;max-width:100%;margin:0 auto 7px;padding:2px 7px;border-radius:8px;background:var(--verde);color:var(--creme);font:500 .66rem/1.25 Poppins,sans-serif}
+.nums{display:flex;flex-wrap:wrap;justify-content:center;gap:4px}
+.kq{display:grid;place-items:center;width:31px;height:31px;padding:0;border:0;border-radius:50%;background:var(--verde);color:var(--creme);font:600 .76rem Poppins,sans-serif;cursor:pointer}
+.kq:active{transform:scale(.9)}
+.kq.sel{background:var(--vermelho)}
+#lista{display:none;margin-top:4px}
+#lista.on{display:block}
+.ps-i{display:flex;align-items:center;gap:10px;width:100%;padding:8px 2px;background:none;border:0;border-bottom:1px dashed #e5d3b0;color:var(--tinta);text-align:left;cursor:pointer}
+.ps-i img{width:38px;height:38px;flex:none}
+.ps-i .t{flex:1;min-width:0}
+.ps-i small{display:block;font-size:.68rem;font-weight:500;color:#8a6a40}
+.ps-i b{display:block;font-size:.82rem;font-weight:600;line-height:1.25}
+.ps-i .pr{flex:none;padding:4px 10px;border-radius:999px;background:var(--verde);color:var(--dourado);font-size:.78rem;font-weight:600}
+.lista-nota{margin:10px 4px 0;font-size:.68rem;color:#8a6a40}
+.nota{width:max-content;max-width:calc(100% - 16px);margin:10px auto 16px;padding:8px 16px;border-radius:14px;background:var(--areia);color:var(--verde);font-size:.7rem;line-height:1.5;text-align:center}
+
+#folha{position:fixed;inset:0;z-index:30;display:none;align-items:flex-end;justify-content:center;background:rgba(30,20,10,.5)}
+#folha.on{display:flex}
+.cartao{width:100%;max-width:440px;padding:16px 16px calc(14px + env(safe-area-inset-bottom));background:var(--creme);border-top:5px solid var(--areia);border-radius:22px 22px 0 0;text-align:center}
+.cartao img{width:68px;height:68px}
+.cartao h3{margin:6px 0 4px;font:italic 700 1.5rem/1.15 "Playfair Display",Georgia,serif;color:var(--verde)}
+.cartao .sub{display:inline-block;margin-bottom:8px;padding:3px 14px;border-radius:999px;background:var(--verde);color:var(--creme);font-size:.74rem;font-weight:500}
+.cartao .ps{margin:0 0 12px;font-size:.8rem;color:var(--verde)}
+.ver{display:block;padding:13px;border-radius:999px;background:var(--vermelho);color:#fff;font-weight:600;text-decoration:none}
+.fechar{margin-top:6px;padding:8px 16px;background:none;border:0;color:var(--verde);font:500 .85rem Poppins,sans-serif;cursor:pointer}
+
+@media(prefers-reduced-motion:reduce){.trilho,.trilho i{transition:none}}
+
+/* desktop: filtros na lateral */
+@media(min-width:900px){
+  .cab .logo{height:92px}.cab .ramo{height:68px}
+  .faixa h1{font-size:1.9rem}
+  .painel{display:grid;grid-template-columns:280px 1fr;gap:0 26px;align-items:start;max-width:1140px;margin:0 auto;padding:20px;border-radius:30px}
+  .lateral{position:sticky;top:14px;z-index:5;max-height:calc(100dvh - 28px);overflow-y:auto;padding:16px;background:#fff;border:2px solid var(--areia);border-radius:20px}
+  .lat-tit{display:block;margin:0 0 12px;font:italic 700 1.45rem/1.2 "Playfair Display",Georgia,serif;color:var(--verde)}
+  .chave{width:100%}
+  .barra{position:static;background:none;padding:0}
+  .ajuda{display:block;margin:8px 2px 0;font-size:.72rem;line-height:1.4;color:#6f5a36}
+  .btn-esp,.ativos,.g-x,.g-ok{display:none}
+  .gaveta{display:flex;margin-top:0;background:none;border:0;border-radius:0;overflow:visible}
+  .g-cab{padding:16px 0 6px}
+  .g-cab h2{font:600 .72rem Poppins,sans-serif;letter-spacing:.07em;text-transform:uppercase;color:#8a6a40}
+  .opcoes{display:flex;flex-direction:column;gap:2px;padding:0;overflow:visible}
+  .opcao{flex:1;width:auto;flex-direction:row;gap:10px;min-height:0;padding:4px 8px;border-color:transparent;background:none;border-radius:12px;font-size:.82rem;text-align:left}
+  .opcao:hover{background:#f8eed6}
+  .opcao img{width:30px;height:30px}
+  .opcao .nm{flex:1}
+  .opcao .ct{display:block;font-size:.72rem;font-weight:500;color:#8a6a40}
+  .opcao[aria-pressed=true]{background:#f4e3c3;border-color:var(--verde)}
+  .opcao[aria-pressed=true]::after{display:none}
+  .g-pe{padding:10px 0 0;border:0}
+  #resumo{margin:2px 2px 4px;font-size:.84rem}
+  .mapa{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:0 16px}
+  .grupo{margin-top:30px;padding-top:32px}
+  .rot{font-size:.74rem}
+  .kq{width:38px;height:38px;font-size:.9rem}.kq:hover{background:var(--vermelho)}
+  .nums{gap:6px}
+  #lista.on{display:grid;grid-template-columns:1fr 1fr;column-gap:26px}
+  .lista-nota{grid-column:1/-1}
+  .ps-i:hover{background:#f8eed6}
+  #folha{align-items:center}.cartao{border-radius:22px}
+}
+</style>
 </head>
 <body>
+<div class="topo"></div>
+<div class="borda" aria-hidden="true"></div>
+<header class="cab">
+  <img class="ramo" src="assets/ramo.svg" alt="" width="49" height="42">
+  <img class="logo" src="assets/logo-natal.svg" alt="Natal do Bem" width="101" height="58" fetchpriority="high">
+  <img class="ramo dir" src="assets/ramo.svg" alt="" width="49" height="42">
+</header>
+<div class="faixa"><h1>Vila Gastronômica</h1></div>
 
-  <main class="palco">
-    <div class="panfleto" id="panfleto">
-      <img src="public/panfleto.png" alt="Panfleto com ofertas e lojas participantes" />
-      <div class="balao" id="balao" role="dialog" aria-hidden="true" aria-labelledby="balao-titulo">
-        <button class="balao-fechar" id="balao-fechar" type="button" aria-label="Fechar informações da loja">✕</button>
-        <h3 id="balao-titulo"></h3>
-        <p id="balao-descricao"></p>
-        <a class="btn-cardapio" id="balao-link" href="#" target="_blank" rel="noopener noreferrer">Ver cardápio</a>
-      </div>
+<section class="painel" aria-label="Quiosques da Vila Gastronômica">
+  <aside class="lateral">
+    <h2 class="lat-tit">Filtros</h2>
+    <div class="barra">
+      <button id="chave" class="chave" type="button" role="switch" aria-checked="false"><span class="trilho" aria-hidden="true"><i></i></span>Prato social</button>
+      <button id="abrir" class="btn-esp" type="button" aria-expanded="false" aria-controls="gaveta">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h14M3 14h14"/><circle cx="7" cy="6" r="2.2" fill="currentColor"/><circle cx="13" cy="14" r="2.2" fill="currentColor"/></svg>
+        Especialidades <span class="qn" id="qn" hidden></span>
+      </button>
     </div>
-    <div class="dica-toque" id="dica-toque">Toque nos números para ver o cardápio</div>
-  </main>
+    <p class="ajuda">Mostra o prato social de cada quiosque, com o preço. Você pode combinar com as especialidades.</p>
+    <div class="ativos" id="ativos" hidden></div>
+    <div class="gaveta" id="gaveta" role="group" aria-labelledby="gTit">
+      <div class="g-cab"><h2 id="gTit">Especialidades</h2><button id="gFecha" class="g-x" type="button" aria-label="Fechar">×</button></div>
+      <div class="opcoes" id="opcoes"></div>
+      <div class="g-pe"><button id="gLimpa" class="limpar" type="button">Limpar</button><button id="gOk" class="g-ok" type="button">Ver quiosques</button></div>
+    </div>
+  </aside>
+  <div class="conteudo">
+    <p id="resumo" role="status" aria-live="polite"></p>
+    <div class="mapa" id="mapa"></div>
+    <div id="lista"></div>
+  </div>
+</section>
+<p class="nota">Cada número é o número de um quiosque da Vila Gastronômica, na ordem da vila. Toque no número para abrir o cardápio daquele quiosque.</p>
 
-  <script src="data/lojas.js"></script>
-  <script src="app.js"></script>
+<div id="folha" role="dialog" aria-modal="true" aria-labelledby="fNome">
+  <div class="cartao">
+    <img id="fIco" alt="">
+    <h3 id="fNome"></h3>
+    <span class="sub" id="fSub"></span>
+    <p class="ps" id="fPs"></p>
+    <a class="ver" id="fVer" target="_blank" rel="noopener">Ver cardápio</a>
+    <button class="fechar" id="fechar" type="button">Fechar</button>
+  </div>
+</div>
+
+<script>
+/* Cardápios: cardapios/NN.pdf (NN = número do quiosque). Ícones: icones/<tipo>.png */
+const CAT={"Hot Dog":"hotdog","Pastel":"pastel","Crepe":"crepe","Panelinha":"panelinha","Massas":"massas","Hambúrguer":"hamburguer","Comida Árabe":"arabe","Pamonha e Caldos":"pamonha","Jantinha e Espetos":"jantinha","Café e Quitandas":"cafe","Sucos e Cremes":"sucos","Pizza":"pizza","Churros":"churros","Sorvetes":"sorvetes","Doces":"doces","Vinho":"vinho","Chopp":"chopp"};
+const Q=[[1,"Pizza","Caz-Ô Pizzaria"],[2,"Sorvetes","Açaí do Bem"],[3,"Panelinha","Panelinha da Nega"],[4,"Massas","Masseo"],[5,"Hambúrguer","Burger Della’s"],[6,"Chopp","Colombina Chopp"],[7,"Crepe","Crepedelic"],[8,"Café e Quitandas","Lila Culinária"],[9,"Pastel","Pastelaria Ebenezer"],[10,"Hot Dog","Uai! Dog"],[11,"Jantinha e Espetos","Jantinha da Peta"],[12,"Pizza","Bonna Sabor"],[13,"Hambúrguer","Vila Buldogs"],[14,"Vinho","Empório Aleana"],[15,"Pamonha e Caldos","Canju Alimentos"],[16,"Sucos e Cremes","Mr. Diow"],[17,"Crepe","Crepe com Amor"],[18,"Comida Árabe","Xufi Culinária Árabe"],[19,"Hambúrguer","Panças BBQ & Burguer"],[20,"Panelinha","Comitiva Gourmet"],[21,"Doces","Frutarte Confeitaria"],[22,"Chopp","Chopp Jalapa"],[23,"Pizza","Folli Pizzaria"],[24,"Pastel","Arcanjo’s Pastéis"],[25,"Massas","Casa das Massas"],[26,"Hot Dog","Dogão Goiano"],[27,"Churros","Calais Churros"],[28,"Jantinha e Espetos","Jantinha da Maju"],[29,"Hambúrguer","604 Burger"]];
+const PS={1:["Fatia de pizza banana com canela (145g)",8],2:["Picolés frutados (70g)",8],3:["Galinhada (290g)",12],4:["Macarrão pizza (375g)",12],5:["Clássico (200g)",12],6:["Chopp artesanal pilsen puro malte (300ml)",8],7:["Crepe francês marguerita (185g)",12],8:["Disco de carne com mussarela (130g)",12],9:["Mini pastel, 1 de carne e 1 de queijo (215g)",10],10:["Dog social (310g)",12],11:["Mini jantinha (300g)",12],12:["Pizza de muçarela (270g)",12],13:["X-Burguer (240g)",12],14:["Taça de vinho Talacasto tinto suave (120ml)",12],15:["Caldo de feijão (380g)",12],16:["Suco de laranja (500ml)",12],17:["Crepe francês marguerita (200g)",12],18:["Esfiha aberta de carne (60g)",12],19:["Smoked Smash (250g)",12],20:["Risoto do cerrado com pequi (350g)",12],21:["Bolo gelado de coco (150g)",12],22:["Chopp artesanal puro malte (300ml)",8],23:["Fatia de pizza de muçarela (130g)",6],24:["Pastel de presunto e queijo (150g)",12],25:["Rondele (300g)",12],26:["Dog social (270g)",10],27:["Mini churros recheado (140g)",12],28:["Linguiça cuiabana com mandioca e vinagrete (400g)",10],29:["Parquinho (200g)",9.9]};
+const R$=v=>v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+const DICA="Toque no número de um quiosque para ver o cardápio";
+const p2=n=>String(n).padStart(2,"0"),$=id=>document.getElementById(id),ico=c=>`icones/${CAT[c]}.png`;
+const desktop=matchMedia("(min-width:900px)");
+let social=false,foco=null;const cats=new Set();
+
+Object.keys(CAT).forEach(cat=>{
+  const itens=Q.filter(q=>q[1]===cat);if(!itens.length)return;
+  const g=document.createElement("section");g.className="grupo";g.dataset.cat=cat;g.setAttribute("aria-label",cat);
+  g.innerHTML=`<img src="${ico(cat)}" alt="" width="46" height="46" decoding="async"><span class="rot">${cat}</span><div class="nums"></div>`;
+  itens.forEach(([n,,nome])=>{
+    const b=document.createElement("button");b.type="button";b.className="kq";b.dataset.n=n;b.textContent=p2(n);
+    b.setAttribute("aria-label",`Quiosque ${p2(n)}, ${nome}`);b.onclick=()=>abrir(n,b);g.lastChild.appendChild(b);
+  });
+  $("mapa").appendChild(g);
+  const o=document.createElement("button");o.type="button";o.className="opcao";o.dataset.cat=cat;o.setAttribute("aria-pressed","false");
+  o.innerHTML=`<img src="${ico(cat)}" alt=""><span class="nm">${cat}</span><span class="ct" aria-label="${itens.length} quiosques">${itens.length}</span>`;
+  o.onclick=()=>alternar(cat);$("opcoes").appendChild(o);
+});
+Q.forEach(([n,cat,nome])=>{
+  const it=document.createElement("button");it.type="button";it.className="ps-i";it.dataset.cat=cat;it.dataset.n=n;
+  it.innerHTML=`<img src="${ico(cat)}" alt="" width="38" height="38" loading="lazy" decoding="async"><span class="t"><small>${p2(n)} · ${nome}</small><b>${PS[n][0]}</b></span><span class="pr">${R$(PS[n][1])}</span>`;
+  it.onclick=()=>abrir(n,it);$("lista").appendChild(it);
+});
+const nt=document.createElement("p");nt.className="lista-nota";
+nt.textContent="Na indisponibilidade do prato social, será oferecido um prato do cardápio como substituto no mesmo valor.";
+$("lista").appendChild(nt);
+
+function alternar(c){cats.has(c)?cats.delete(c):cats.add(c);filtrar(true)}
+function limpar(){cats.clear();filtrar(true)}
+function filtrar(user){
+  const sel=cats.size>0,ok=c=>!sel||cats.has(c),precos=[];let nq=0;
+  $("chave").setAttribute("aria-checked",social);
+  document.querySelectorAll(".opcao").forEach(b=>b.setAttribute("aria-pressed",cats.has(b.dataset.cat)));
+  document.querySelectorAll(".grupo").forEach(g=>g.hidden=!ok(g.dataset.cat));
+  document.querySelectorAll(".ps-i").forEach(i=>{const v=ok(i.dataset.cat);i.hidden=!v;if(v){nq++;precos.push(PS[i.dataset.n][1])}});
+  $("mapa").hidden=social;$("lista").classList.toggle("on",social);
+  const at=$("ativos");at.innerHTML="";
+  cats.forEach(c=>{
+    const b=document.createElement("button");b.type="button";b.className="ativo";b.setAttribute("aria-label",`Remover filtro ${c}`);
+    b.innerHTML=`${c}<span aria-hidden="true">×</span>`;b.onclick=()=>alternar(c);at.appendChild(b);
+  });
+  if(sel){const l=document.createElement("button");l.type="button";l.className="limpar";l.textContent="Limpar";l.onclick=limpar;at.appendChild(l)}
+  at.hidden=!sel;$("gLimpa").hidden=!sel;
+  $("qn").hidden=!sel;$("qn").textContent=cats.size;
+  const nomes=[...cats].join(", "),q=nq===1?"quiosque":"quiosques";
+  if(social){
+    $("resumo").textContent=`Prato social${sel?" · "+nomes:""} · ${nq} ${nq===1?"opção":"opções"}, de ${R$(Math.min(...precos))} a ${R$(Math.max(...precos))}`;
+    $("gOk").textContent=`Ver ${nq} ${nq===1?"prato social":"pratos sociais"}`;
+  }else{
+    $("resumo").textContent=sel?`${nomes} · ${nq} ${q}`:DICA;
+    $("gOk").textContent=`Ver ${nq} ${q}`;
+  }
+  if(user){const p=document.querySelector(".painel").getBoundingClientRect().top;if(p<0)window.scrollBy({top:p-8})}
+}
+$("chave").onclick=()=>{social=!social;filtrar(true)};
+$("gLimpa").onclick=limpar;
+
+function gaveta(on){
+  if(desktop.matches)return;
+  const g=$("gaveta");g.classList.toggle("on",on);
+  $("abrir").setAttribute("aria-expanded",on);
+}
+$("abrir").onclick=()=>gaveta(!$("gaveta").classList.contains("on"));
+$("gFecha").onclick=$("gOk").onclick=()=>gaveta(false);
+desktop.onchange=()=>{$("gaveta").classList.remove("on")};
+
+function abrir(n,el){
+  const q=Q.find(x=>x[0]===n);foco=el;el.classList.add("sel");
+  $("fIco").src=ico(q[1]);$("fNome").textContent=q[2];
+  $("fSub").textContent=`Quiosque ${p2(n)} · ${q[1]}`;
+  $("fPs").textContent=`Prato social: ${PS[n][0]} · ${R$(PS[n][1])}`;
+  $("fVer").href=`cardapios/${p2(n)}.pdf`;
+  $("folha").classList.add("on");$("fVer").focus();
+}
+function fechar(){
+  $("folha").classList.remove("on");
+  document.querySelectorAll(".sel").forEach(e=>e.classList.remove("sel"));
+  if(foco)foco.focus();
+}
+$("fechar").onclick=fechar;
+$("folha").onclick=e=>{if(e.target.id==="folha")fechar()};
+document.addEventListener("keydown",e=>{
+  if(e.key!=="Escape")return;
+  if($("folha").classList.contains("on"))fechar();else if($("gaveta").classList.contains("on"))gaveta(false);
+});
+filtrar(false);
+</script>
 </body>
 </html>

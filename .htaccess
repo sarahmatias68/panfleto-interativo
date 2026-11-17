@@ -36,7 +36,9 @@ DirectoryIndex index.html
   ExpiresByType application/pdf "access plus 1 day"
 </IfModule>
 <IfModule mod_headers.c>
-  <FilesMatch "\.html$">
+  # HTML, CSS e JS revalidam a cada acesso (resposta 304 quando nada mudou),
+  # assim uma atualização no site nunca mistura HTML novo com CSS/JS antigo.
+  <FilesMatch "\.(html|css|js)$">
     Header set Cache-Control "no-cache"
   </FilesMatch>
   <FilesMatch "\.(png|svg)$">

@@ -1,0 +1,723 @@
+/*
+ * Vila Gastronômica · Natal do Bem
+ *
+ * Mobile first. Cada seção traz junto o seu bloco de desktop
+ * (@media (min-width: 900px)), que deve bater com `desktop` em js/app.js.
+ */
+
+/* =========================================================
+   Tokens
+   ========================================================= */
+
+:root {
+  --verde: #1d4823;
+  --verde-borda: #264d25;
+  --vermelho: #cf1f2b;
+  --dourado: #e6c65a;
+  --areia: #d0a87e;
+  --creme: #fffaf0;
+  --tinta: #1e351f;
+  --linha: #ead9b8;
+  --linha-tracejada: #e5d3b0;
+  --marrom: #8a6a40;
+  --marrom-escuro: #6f5a36;
+  --bege-hover: #f8eed6;
+  --bege-ativo: #f4e3c3;
+  --bege-botao: #f1e6cf;
+  --amarelo-claro: #fff3cf;
+  --trilho: #cdbf9f;
+  --branco: #fff;
+
+  --fonte: Poppins, system-ui, sans-serif;
+  --serifa: "Playfair Display", Georgia, serif;
+  --sombra-botao: 0 3px 0 rgba(0, 0, 0, .2);
+  --sombra-botao-apertado: 0 1px 0 rgba(0, 0, 0, .2);
+  --redondo: 999px;
+}
+
+/* =========================================================
+   Base
+   ========================================================= */
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+[hidden] { display: none !important; }
+
+html, body { margin: 0; }
+
+body {
+  min-height: 100dvh;
+  font-family: var(--fonte);
+  color: var(--tinta);
+  background: var(--vermelho);
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 3px solid var(--vermelho);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; }
+}
+
+/* =========================================================
+   Cabeçalho
+   ========================================================= */
+
+.topo {
+  height: env(safe-area-inset-top);
+  background: var(--verde-borda);
+}
+
+.borda {
+  height: 16px;
+  background: url(../assets/borda.svg) repeat-x 0 0 / auto 16px;
+}
+
+.cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 4px 8px 0;
+}
+.cabecalho .logo { width: auto; height: 58px; }
+.cabecalho .ramo { width: auto; height: 42px; }
+.cabecalho .ramo-direito { transform: scaleX(-1); }
+
+.faixa {
+  width: max-content;
+  max-width: 94%;
+  margin: 2px auto 10px;
+  padding: 4px 30px 5px;
+  background: var(--verde);
+  clip-path: polygon(0 0, 100% 0, 97% 50%, 100% 100%, 0 100%, 3% 50%);
+}
+.faixa h1 {
+  margin: 0;
+  font: italic 700 1.25rem/1.2 var(--serifa);
+  color: var(--dourado);
+  text-align: center;
+}
+
+@media (min-width: 900px) {
+  .cabecalho .logo { height: 92px; }
+  .cabecalho .ramo { height: 68px; }
+  .faixa h1 { font-size: 1.9rem; }
+}
+
+/* =========================================================
+   Painel (lateral de filtros + conteúdo)
+   ========================================================= */
+
+.painel {
+  margin: 0 8px 16px;
+  padding: 10px 8px 12px;
+  background: var(--creme);
+  border-radius: 22px;
+}
+
+.lateral {
+  padding: 0 0 8px;
+  background: var(--creme);
+  border-bottom: 1px solid var(--linha);
+}
+
+.lateral-titulo,
+.lateral-ajuda { display: none; }
+
+@media (min-width: 900px) {
+  .painel {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 0 26px;
+    align-items: start;
+    max-width: 1140px;
+    margin: 0 auto 24px;
+    padding: 20px;
+    border-radius: 30px;
+  }
+
+  .lateral {
+    position: sticky;
+    top: 14px;
+    z-index: 5;
+    max-height: calc(100dvh - 28px);
+    overflow-y: auto;
+    padding: 16px;
+    background: var(--branco);
+    border: 2px solid var(--areia);
+    border-radius: 20px;
+  }
+
+  .lateral-titulo {
+    display: block;
+    margin: 0 0 12px;
+    font: italic 700 1.45rem/1.2 var(--serifa);
+    color: var(--verde);
+  }
+
+  .lateral-ajuda {
+    display: block;
+    margin: 8px 2px 0;
+    font-size: .72rem;
+    line-height: 1.4;
+    color: var(--marrom-escuro);
+  }
+}
+
+/* =========================================================
+   Barra de botões (mobile: fixa no topo ao rolar)
+   ========================================================= */
+
+.barra {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  gap: 8px;
+  padding: 4px 0;
+  background: var(--creme);
+}
+
+.botao-barra {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 52px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--redondo);
+  background: var(--verde);
+  color: var(--creme);
+  font-size: .9rem;
+  font-weight: 600;
+  box-shadow: var(--sombra-botao);
+  transition: transform .08s, box-shadow .08s;
+}
+.botao-barra:active {
+  transform: translateY(2px);
+  box-shadow: var(--sombra-botao-apertado);
+}
+.botao-barra .icone { width: 18px; height: 18px; }
+
+/* Contador de filtros no botão "Quiosques" */
+.contador {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: var(--redondo);
+  background: var(--vermelho);
+  color: var(--branco);
+  font-size: .68rem;
+  font-weight: 600;
+}
+
+/* Chave "Prato social": botão no mobile, interruptor no desktop */
+.chave[aria-checked="true"] { background: var(--vermelho); color: var(--branco); }
+.chave .trilho { display: none; }
+
+.trilho {
+  position: relative;
+  width: 36px;
+  height: 22px;
+  border-radius: var(--redondo);
+  background: var(--trilho);
+  transition: background .15s;
+}
+.trilho i {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--branco);
+  transition: transform .15s;
+}
+.chave[aria-checked="true"] .trilho { background: var(--vermelho); }
+.chave[aria-checked="true"] .trilho i { transform: translateX(14px); }
+
+@media (min-width: 900px) {
+  .barra { position: static; padding: 0; background: none; }
+
+  .botao-filtros { display: none; }
+
+  .chave {
+    flex: none;
+    width: 100%;
+    height: 42px;
+    justify-content: flex-start;
+    padding: 0 14px 0 8px;
+    border: 2px solid var(--areia);
+    background: var(--branco);
+    color: var(--verde);
+    font-size: .8rem;
+    box-shadow: none;
+  }
+  .chave:active { transform: none; box-shadow: none; }
+  .chave .trilho { display: block; }
+  .chave .icone { display: none; }
+  .chave[aria-checked="true"] {
+    border-color: var(--vermelho);
+    background: var(--amarelo-claro);
+    color: var(--verde);
+  }
+}
+
+/* =========================================================
+   Filtros ativos (chips, só mobile)
+   ========================================================= */
+
+.ativos {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 8px 0 0;
+  scrollbar-width: none;
+}
+.ativos::-webkit-scrollbar { display: none; }
+
+.ativo {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 8px 0 12px;
+  border: 0;
+  border-radius: var(--redondo);
+  background: var(--areia);
+  color: var(--verde);
+  font-size: .72rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.ativo span { font-size: 1.05rem; line-height: 1; }
+
+.limpar {
+  flex: none;
+  padding: 8px 6px;
+  border: 0;
+  background: none;
+  color: var(--vermelho);
+  font-size: .74rem;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+@media (min-width: 900px) {
+  .ativos { display: none; }
+}
+
+/* =========================================================
+   Gaveta de tipos
+   Mobile: acordeão que empurra o conteúdo. Desktop: lista fixa na lateral.
+   ========================================================= */
+
+.gaveta {
+  display: none;
+  flex-direction: column;
+  margin-top: 10px;
+  overflow: hidden;
+  background: var(--branco);
+  border: 2px solid var(--areia);
+  border-radius: 16px;
+}
+.gaveta.aberta { display: flex; }
+
+.gaveta-cab {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px 2px;
+}
+.gaveta-cab h2 {
+  margin: 0;
+  font: italic 700 1.3rem/1.2 var(--serifa);
+  color: var(--verde);
+}
+
+.gaveta-fechar {
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--bege-botao);
+  color: var(--verde);
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.opcoes {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 8px 12px 12px;
+  scrollbar-width: none;
+}
+.opcoes::-webkit-scrollbar { display: none; }
+
+.opcao {
+  position: relative;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 82px;
+  min-height: 88px;
+  padding: 8px 4px 6px;
+  background: var(--branco);
+  border: 2px solid var(--linha);
+  border-radius: 16px;
+  color: var(--verde);
+  font-size: .72rem;
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: center;
+}
+.opcao img { width: 44px; height: 44px; }
+.opcao-total { display: none; }
+
+.opcao[aria-pressed="true"] {
+  background: var(--bege-ativo);
+  border-color: var(--verde);
+  font-weight: 600;
+}
+.opcao[aria-pressed="true"]::after {
+  content: "✓";
+  position: absolute;
+  top: 4px;
+  right: 5px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--verde);
+  color: var(--creme);
+  font-size: .7rem;
+  line-height: 18px;
+}
+
+.gaveta-pe {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px 12px;
+  border-top: 1px solid var(--linha);
+}
+
+.gaveta-ok {
+  flex: 1;
+  height: 46px;
+  border: 0;
+  border-radius: var(--redondo);
+  background: var(--vermelho);
+  color: var(--branco);
+  font-size: .9rem;
+  font-weight: 600;
+}
+
+@media (min-width: 900px) {
+  .gaveta {
+    display: flex;
+    margin-top: 0;
+    overflow: visible;
+    background: none;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .gaveta-cab { padding: 16px 0 6px; }
+  .gaveta-cab h2 {
+    font: 600 .72rem var(--fonte);
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--marrom);
+  }
+
+  .gaveta-fechar,
+  .gaveta-ok { display: none; }
+
+  .opcoes {
+    flex-direction: column;
+    gap: 2px;
+    overflow: visible;
+    padding: 0;
+  }
+
+  .opcao {
+    flex-direction: row;
+    gap: 10px;
+    width: auto;
+    min-height: 0;
+    padding: 4px 8px;
+    background: none;
+    border-color: transparent;
+    border-radius: 12px;
+    font-size: .82rem;
+    text-align: left;
+  }
+  .opcao:hover { background: var(--bege-hover); }
+  .opcao img { width: 30px; height: 30px; }
+  .opcao-nome { flex: 1; }
+  .opcao-total {
+    display: block;
+    font-size: .72rem;
+    font-weight: 500;
+    color: var(--marrom);
+  }
+  .opcao[aria-pressed="true"] { background: var(--bege-ativo); border-color: var(--verde); }
+  .opcao[aria-pressed="true"]::after { display: none; }
+
+  .gaveta-pe { padding: 10px 0 0; border: 0; }
+}
+
+/* =========================================================
+   Resumo (dica / filtros aplicados)
+   ========================================================= */
+
+.resumo {
+  min-height: 1.4em;
+  margin: 8px 4px 0;
+  font-size: .95rem;
+  font-weight: 500;
+  color: var(--verde);
+}
+.resumo strong {
+  font-weight: 700;
+  font-size: 1.12em;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+}
+
+@media (min-width: 900px) {
+  .resumo { margin: 2px 2px 6px; font-size: 1.15rem; }
+}
+
+/* =========================================================
+   Mapa de quiosques (grupos por tipo)
+   ========================================================= */
+
+.mapa {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0 8px;
+  padding-top: 2px;
+}
+
+.grupo {
+  position: relative;
+  margin-top: 26px;
+  padding: 28px 4px 8px;
+  border: 2px solid var(--areia);
+  border-radius: 20px 20px 14px 14px;
+  text-align: center;
+}
+.grupo > img {
+  position: absolute;
+  top: -23px;
+  left: 50%;
+  width: 46px;
+  height: 46px;
+  margin-left: -23px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px var(--creme);
+}
+
+.grupo-nome {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto 7px;
+  padding: 2px 7px;
+  border-radius: 8px;
+  background: var(--verde);
+  color: var(--creme);
+  font-size: .66rem;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.grupo-numeros {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+}
+
+.num-quiosque {
+  display: grid;
+  place-items: center;
+  width: 31px;
+  height: 31px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--verde);
+  color: var(--creme);
+  font-size: .76rem;
+  font-weight: 600;
+}
+.num-quiosque:active { transform: scale(.9); }
+.num-quiosque.selecionado { background: var(--vermelho); }
+
+@media (min-width: 900px) {
+  .mapa {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0 16px;
+  }
+  .grupo { margin-top: 30px; padding-top: 32px; }
+  .grupo-nome { font-size: .74rem; }
+  .grupo-numeros { gap: 6px; }
+  .num-quiosque { width: 38px; height: 38px; font-size: .9rem; }
+  .num-quiosque:hover { background: var(--vermelho); }
+}
+
+/* =========================================================
+   Lista de pratos sociais
+   ========================================================= */
+
+.lista { margin-top: 4px; }
+
+.prato {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 2px;
+  background: none;
+  border: 0;
+  border-bottom: 1px dashed var(--linha-tracejada);
+  color: var(--tinta);
+  text-align: left;
+}
+.prato img { flex: none; width: 38px; height: 38px; }
+
+.prato-texto { flex: 1; min-width: 0; }
+.prato-texto small {
+  display: block;
+  font-size: .68rem;
+  font-weight: 500;
+  color: var(--marrom);
+}
+.prato-texto b {
+  display: block;
+  font-size: .82rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.prato-preco {
+  flex: none;
+  padding: 4px 10px;
+  border-radius: var(--redondo);
+  background: var(--verde);
+  color: var(--dourado);
+  font-size: .78rem;
+  font-weight: 600;
+}
+
+.lista-nota {
+  margin: 10px 4px 0;
+  font-size: .68rem;
+  color: var(--marrom);
+}
+
+@media (min-width: 900px) {
+  .lista {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 26px;
+  }
+  .lista-nota { grid-column: 1 / -1; }
+  .prato:hover { background: var(--bege-hover); }
+}
+
+/* =========================================================
+   Ficha do quiosque (<dialog>)
+   Mobile: folha presa embaixo. Desktop: centralizada.
+   ========================================================= */
+
+.folha {
+  width: 100%;
+  max-width: 440px;
+  margin: auto auto 0;
+  padding: 0;
+  border: 0;
+  border-top: 5px solid var(--areia);
+  border-radius: 22px 22px 0 0;
+  background: var(--creme);
+  color: var(--tinta);
+  text-align: center;
+}
+.folha::backdrop { background: rgba(30, 20, 10, .5); }
+
+.folha-conteudo {
+  padding: 16px 16px calc(14px + env(safe-area-inset-bottom));
+}
+.folha-conteudo img { width: 68px; height: 68px; }
+
+.folha-nome {
+  margin: 6px 0 4px;
+  font: italic 700 1.5rem/1.15 var(--serifa);
+  color: var(--verde);
+}
+
+.folha-tipo {
+  display: inline-block;
+  margin-bottom: 8px;
+  padding: 3px 14px;
+  border-radius: var(--redondo);
+  background: var(--verde);
+  color: var(--creme);
+  font-size: .74rem;
+  font-weight: 500;
+}
+
+.folha-prato {
+  margin: 0 0 12px;
+  font-size: .8rem;
+  color: var(--verde);
+}
+
+.folha-cardapio {
+  display: block;
+  padding: 13px;
+  border-radius: var(--redondo);
+  background: var(--vermelho);
+  color: var(--branco);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.folha form { margin: 0; }
+
+.folha-fechar {
+  margin-top: 6px;
+  padding: 8px 16px;
+  border: 0;
+  background: none;
+  color: var(--verde);
+  font-size: .85rem;
+  font-weight: 500;
+}
+
+@media (min-width: 900px) {
+  .folha { margin: auto; border-radius: 22px; }
+}
